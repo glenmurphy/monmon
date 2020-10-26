@@ -49,7 +49,12 @@ export default class MonMon {
   }
 
   #logListener = (monitor, message) =>  {
-    console.log(monitor.options.subject + ': ' + message);
+    var out = monitor.options.subject + ': ' + message;
+    
+    if (out.length > 80)
+      out = out.substring(0, 77) + '...';
+    
+    console.log(out);
   }
 
   #matchListener = (monitor, message) => {
