@@ -1,6 +1,7 @@
 # monmon
 
-website monitoring and notification
+Website monitoring (String monitoring, page changes) and notification (Email, SMS, IFTTT). This is
+a hobby/itch-scatching project for myself and my own uses, and is only updated when I have a need.
 
 # example usage
 
