@@ -17,3 +17,12 @@ website monitoring and notification
       sms : '+16501112233',
       persist : false
     });
+
+# Deno vs Node
+
+This is written in ES6 and works in Deno and Node with a preference for Deno; to make it work in
+Node, you need to add fetch support by adding "import fetch from 'node-fetch';" to the headers of
+some files (TODO: figure out how to do this automatically)
+
+To run with deno, use deno run --allow-net yourscript.js where yourscript.js contains code like
+the above

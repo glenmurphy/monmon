@@ -1,4 +1,5 @@
-import fetch from 'node-fetch';
+// uncomment if you're using node
+// import fetch from 'node-fetch';
 
 export default class PageMon {
   // url, frequency, type, match, matchListener, logListener
@@ -20,7 +21,7 @@ export default class PageMon {
     this.init = false;
     this.lastData = null;
 
-    setTimeout(this.fetch.bind(this), 10);
+    setTimeout(this.fetch.bind(this), 1000);
     this.interval = setInterval(this.fetch.bind(this), this.frequency);
   }
 
@@ -81,7 +82,7 @@ export default class PageMon {
     fetch(this.url, {
       headers : {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36',
-        'connection': 'keep-alive',
+        'connection': 'keep-alive', // needed for node to connect to bestbuy
       },
     }).then(async res => {
       var body = await res.text();

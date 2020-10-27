@@ -1,4 +1,5 @@
-import fetch from 'node-fetch';
+// uncomment if you're using node
+// import fetch from 'node-fetch';
 
 export default class Notifier {
   constructor() {}
