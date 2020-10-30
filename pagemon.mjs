@@ -87,6 +87,9 @@ export default class PageMon {
     }).then(async res => {
       var body = await res.text();
       this.checkResult(res.status, body);
+    }).catch((error) => {
+      this.log("FETCH ERROR:");
+      this.log(error.message);
     });
   }
 
