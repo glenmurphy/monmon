@@ -1,5 +1,6 @@
 // uncomment if you're using node
 // import fetch from 'node-fetch';
+import { encode, decode } from "https://deno.land/std/encoding/base64.ts"
 
 export default class Notifier {
   constructor() {}
@@ -13,7 +14,7 @@ export default class Notifier {
     this.twilioSID = sid;
     this.twilioAuthKey = authKey;
     this.twilioFrom = from;
-    this.twilioBasicAuth = Buffer.from(this.twilioSID + ":" + this.twilioAuthKey).toString('base64');
+    this.twilioBasicAuth = encode(this.twilioSID + ":" + this.twilioAuthKey);
   }
 
   enableIFTTT(apiKey) {
@@ -50,7 +51,7 @@ export default class Notifier {
     });
   }
 
-  sendSMS(to, body) {
+  async sendSMS(to, body) {
     if (!this.twilioSID || !this.twilioAuthKey) {
       throw new Error("Twilio Not Configured");
     }
@@ -63,7 +64,10 @@ export default class Notifier {
         'Authorization' : 'Basic ' + this.twilioBasicAuth
       },
       body : [encodeURI("Body=" + body), encodeURI("From=" + this.twilioFrom), encodeURI("To=" + to)].join("&")
-    }).then((res) => {console.log("SMS Dispatched: " + body)});
+    }).then(async (res) => {
+      console.log("SMS Dispatched:");
+      console.log(await res.text());
+    });
   }
 
   sendIFTTT(message) {
