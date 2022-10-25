@@ -11,7 +11,12 @@ export default class PageMon {
     this.url = options.url;
     this.frequency = options.frequency || 1000 * 60 * 10;
     this.type = options.type || PageMon.TYPE_HASH;
+    this.ignorenewlines = options.ignorenewlines || false;
     this.match = options.match;
+    if (this.ignorenewlines) {
+      this.match = this.match.replace(/\r?\n|\r/g, '');
+    }
+
     this.matchListener = options.matchListener;
     this.logListener = options.logListener;
 
@@ -86,6 +91,9 @@ export default class PageMon {
       },
     }).then(async res => {
       var body = await res.text();
+      if (this.ignorenewlines) {
+        body = body.replace(/\r?\n|\r/g, '');
+      }
       this.checkResult(res.status, body);
     }).catch((error) => {
       this.log("FETCH ERROR:");
@@ -164,6 +172,7 @@ export default class PageMon {
     this.log("Checking for string change");
     if (this.lastData != stringFound) {
       this.matched(stringFound ? "String appeared" : "String disappeared");
+      this.log(body);
       this.lastData = stringFound;
     }
   }
