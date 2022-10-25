@@ -1,6 +1,3 @@
-// uncomment if you're using node
-// import fetch from 'node-fetch';
-
 export default class PageMon {
   // url, frequency, type, match, matchListener, logListener
   constructor(options) {
@@ -11,10 +8,10 @@ export default class PageMon {
     this.url = options.url;
     this.frequency = options.frequency || 1000 * 60 * 10;
     this.type = options.type || PageMon.TYPE_HASH;
-    this.ignorenewlines = options.ignorenewlines || false;
-    this.match = options.match;
-    if (this.ignorenewlines) {
-      this.match = this.match.replace(/\r?\n|\r/g, '');
+    this.caseSensitive = options.casesensitive || false;
+    this.match = options.match
+    if (this.caseSensitive == false) {
+      this.match = this.match.toLowerCase();
     }
 
     this.matchListener = options.matchListener;
@@ -40,6 +37,8 @@ export default class PageMon {
 
   static TYPE_HASH = 1; // default
   static TYPE_STRING = 2;
+  static TYPE_SIZE = 3;
+  static TYPE_XML_CONTENT = 4;
 
   // Helper functions to make initializtion easier
   static MonitorHash(url, frequency, callback) {
@@ -91,9 +90,6 @@ export default class PageMon {
       },
     }).then(async res => {
       var body = await res.text();
-      if (this.ignorenewlines) {
-        body = body.replace(/\r?\n|\r/g, '');
-      }
       this.checkResult(res.status, body);
     }).catch((error) => {
       this.log("FETCH ERROR:");
@@ -113,6 +109,8 @@ export default class PageMon {
       this.checkSize(body);
     else if (this.type == PageMon.TYPE_STRING)
       this.checkString(body);
+    else if (this.type == PageMon.TYPE_XML_CONTENT)
+      this.checkContent(body);
   }
 
   hash(str) {
@@ -159,7 +157,12 @@ export default class PageMon {
     }
   }
 
-  checkString(body) {
+  checkContent(body) {
+    if (this.caseSensitive == false) {
+      body = body.toLowerCase();
+    }
+
+    body = body.toLowerCase().split(/<(?:.*?)>/i).map(x => x.replace(/\r?\n|\r/g, '').trim()).filter((a) => a).join(",");
     var stringFound = Boolean(body.indexOf(this.match) != -1);
 
     if (this.init == false) {
@@ -169,10 +172,32 @@ export default class PageMon {
       return;
     }
 
+    this.log("Checking for xml content change");
+    if (this.lastData != stringFound) {
+      this.log(body);
+      this.matched(stringFound ? "Content appeared" : "Content disappeared");
+      this.lastData = stringFound;
+    }
+  }
+
+  checkString(body) {
+    if (this.caseSensitive == false) {
+      body = body.toLowerCase();
+    }
+
+    var stringFound = Boolean(body.indexOf(this.match) != -1);
+    
+    if (this.init == false) {
+      this.init = true;
+      this.lastData = stringFound;
+      this.log("First String Match: " + stringFound);
+      return;
+    }
+
     this.log("Checking for string change");
     if (this.lastData != stringFound) {
-      this.matched(stringFound ? "String appeared" : "String disappeared");
       this.log(body);
+      this.matched(stringFound ? "String appeared" : "String disappeared");
       this.lastData = stringFound;
     }
   }

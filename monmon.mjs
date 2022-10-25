@@ -27,6 +27,8 @@ export default class MonMon {
 
   static TYPE_HASH = PageMon.TYPE_HASH;
   static TYPE_STRING = PageMon.TYPE_STRING;
+  static TYPE_SIZE = PageMon.TYPE_SIZE;
+  static TYPE_XML_CONTENT = PageMon.TYPE_XML_CONTENT;
   
   enableSendGrid(key, from) {
     this.notifier.enableSendGrid(key, from);
@@ -53,8 +55,8 @@ export default class MonMon {
   #logListener = (monitor, message) =>  {
     var out = monitor.options.subject + ': ' + message;
     
-    if (out.length > 80)
-      out = out.substring(0, 77) + '...';
+    //if (out.length > 80)
+    //  out = out.substring(0, 77) + '...';
     
     console.log(out);
   }
